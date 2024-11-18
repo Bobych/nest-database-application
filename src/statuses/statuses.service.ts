@@ -16,26 +16,29 @@ export class StatusesService {
   }
 
   async findAll() {
-    return await this.statusRepository.findAll();
+    const data = await this.statusRepository.findAll();
+    if (!data.length) {
+      throw new HttpException(`There is no statuses.`, HttpStatus.NOT_FOUND);
+    }
+    return data;
   }
 
   async findOne(id: number) {
     const data = await this.statusRepository.findByPk(id);
-    if (data) {
-      return data;
-    } else {
+    if (!data) {
       throw new HttpException(
         `Status with #id ${id} not found.`,
         HttpStatus.NOT_FOUND,
       );
     }
+    return data;
   }
 
   async update(id: number, dto: UpdateStatusDto) {
     const affected = await this.statusRepository.update(dto, {
       where: { id: id },
     });
-    if (!affected) {
+    if (!affected[0]) {
       throw new HttpException(
         `Status with #id ${id} not found.`,
         HttpStatus.NOT_FOUND,

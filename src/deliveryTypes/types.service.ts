@@ -16,28 +16,31 @@ export class TypesService {
   }
 
   async findAll() {
-    return await this.typesRepository.findAll();
+    const data = await this.typesRepository.findAll();
+    if (!data.length) {
+      throw new HttpException(`There is no types.`, HttpStatus.NOT_FOUND);
+    }
+    return data;
   }
 
   async findOne(id: number) {
     const data = await this.typesRepository.findByPk(id);
-    if (data) {
-      return data;
-    } else {
+    if (!data) {
       throw new HttpException(
-        `Status with #id ${id} not found.`,
+        `Type with #id ${id} not found.`,
         HttpStatus.NOT_FOUND,
       );
     }
+    return data;
   }
 
   async update(id: number, dto: UpdateTypeDto) {
     const affected = await this.typesRepository.update(dto, {
       where: { id: id },
     });
-    if (!affected) {
+    if (!affected[0]) {
       throw new HttpException(
-        `Status with #id ${id} not found.`,
+        `Type with #id ${id} not found.`,
         HttpStatus.NOT_FOUND,
       );
     }
@@ -47,7 +50,7 @@ export class TypesService {
     const affected = await this.typesRepository.destroy({ where: { id: id } });
     if (!affected) {
       throw new HttpException(
-        `Status with #id ${id} not found.`,
+        `Type with #id ${id} not found.`,
         HttpStatus.NOT_FOUND,
       );
     }

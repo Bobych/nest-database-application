@@ -2,40 +2,43 @@ import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CreateTownDto } from './dto/create-town.dto';
 import { UpdateTownDto } from './dto/update-town.dto';
 import { TOWN_REPOSITORY } from 'src/.const';
-import { Types } from 'src/deliveryTypes/entities/type.entity';
+import { Towns } from './entites/town.entity';
 
 @Injectable()
 export class TownService {
   constructor(
     @Inject(TOWN_REPOSITORY)
-    private readonly typesRepository: typeof Types,
+    private readonly townsRepository: typeof Towns,
   ) {}
 
   async create(dto: CreateTownDto) {
-    return await this.typesRepository.create(dto);
+    return await this.townsRepository.create(dto);
   }
 
   async findAll() {
-    return await this.typesRepository.findAll();
+    const data = await this.townsRepository.findAll();
+    if (!data.length) {
+      throw new HttpException(`There is no towns.`, HttpStatus.NOT_FOUND);
+    }
+    return data;
   }
 
   async findOne(id: number) {
-    const data = await this.typesRepository.findByPk(id);
-    if (data) {
-      return data;
-    } else {
+    const data = await this.townsRepository.findByPk(id);
+    if (!data) {
       throw new HttpException(
         `Status with #id ${id} not found.`,
         HttpStatus.NOT_FOUND,
       );
     }
+    return data;
   }
 
   async update(id: number, dto: UpdateTownDto) {
-    const affected = await this.typesRepository.update(dto, {
+    const affected = await this.townsRepository.update(dto, {
       where: { id: id },
     });
-    if (!affected) {
+    if (!affected[0]) {
       throw new HttpException(
         `Status with #id ${id} not found.`,
         HttpStatus.NOT_FOUND,
@@ -44,7 +47,7 @@ export class TownService {
   }
 
   async remove(id: number) {
-    const affected = await this.typesRepository.destroy({ where: { id: id } });
+    const affected = await this.townsRepository.destroy({ where: { id: id } });
     if (!affected) {
       throw new HttpException(
         `Status with #id ${id} not found.`,
