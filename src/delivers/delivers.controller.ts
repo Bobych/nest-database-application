@@ -15,7 +15,7 @@ import { UpdateDeliveryDto } from './dto/update-delivery.dto';
 export class DeliversController {
   constructor(private readonly deliveryService: DeliversService) {}
 
-  @Post('create')
+  @Post()
   create(@Body() dto: CreateDeliveryDto) {
     return this.deliveryService.create(dto);
   }

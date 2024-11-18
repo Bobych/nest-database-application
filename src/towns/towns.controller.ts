@@ -15,7 +15,7 @@ import { UpdateTownDto } from './dto/update-town.dto';
 export class TownController {
   constructor(private readonly townService: TownService) {}
 
-  @Post('create')
+  @Post()
   create(@Body() dto: CreateTownDto) {
     return this.townService.create(dto);
   }
